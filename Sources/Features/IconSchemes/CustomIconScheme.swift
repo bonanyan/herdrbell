@@ -24,11 +24,10 @@ struct CustomIconScheme: IconScheme {
     }
 
     func aggregateIcon(for statuses: some Sequence<AgentStatus>) -> StatusIcon {
-        let set = Set(statuses)
-        if set.contains(.blocked) { return appearance(for: .blocked).icon }
-        if set.contains(.working) { return appearance(for: .working).icon }
-        if set.contains(.done) { return appearance(for: .done).icon }
-        return idleAggregateIcon
+        switch aggregateStatus(for: statuses) {
+        case .idle: idleAggregateIcon
+        case let status: appearance(for: status).icon
+        }
     }
 
     var idleAggregateIcon: StatusIcon {

@@ -15,11 +15,13 @@ struct ClassicIconScheme: IconScheme {
     }
 
     func aggregateIcon(for statuses: some Sequence<AgentStatus>) -> StatusIcon {
-        let set = Set(statuses)
-        if set.contains(.blocked) { return .systemSymbol("exclamationmark.octagon.fill") }
-        if set.contains(.working) { return .systemSymbol("arrow.triangle.2.circlepath") }
-        if set.contains(.done) { return .systemSymbol("checkmark.circle.fill") }
-        return idleAggregateIcon
+        switch aggregateStatus(for: statuses) {
+        case .blocked: .systemSymbol("exclamationmark.octagon.fill")
+        case .unknown: .systemSymbol("questionmark.circle")
+        case .done: .systemSymbol("checkmark.circle.fill")
+        case .working: .systemSymbol("arrow.triangle.2.circlepath")
+        case .idle: idleAggregateIcon
+        }
     }
 
     var idleAggregateIcon: StatusIcon { .systemSymbol("circle.grid.2x2") }

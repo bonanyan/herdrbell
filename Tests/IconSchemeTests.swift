@@ -26,10 +26,11 @@ func classicSchemeCoversEveryStatus() {
     #expect(scheme.aggregateIcon(for: [.idle, .working, .blocked, .done])
         == scheme.aggregateIcon(for: [.blocked]))
     #expect(scheme.aggregateIcon(for: [.idle, .working, .done])
-        == scheme.aggregateIcon(for: [.working]))
+        == scheme.aggregateIcon(for: [.done]))
     #expect(scheme.aggregateIcon(for: [.idle, .done])
         == scheme.aggregateIcon(for: [.done]))
-    #expect(scheme.aggregateIcon(for: [.idle, .unknown]) == scheme.idleAggregateIcon)
+    #expect(scheme.aggregateIcon(for: [.idle, .unknown])
+        == scheme.aggregateIcon(for: [.unknown]))
     #expect(scheme.aggregateIcon(for: []) == scheme.idleAggregateIcon)
 }
 
@@ -55,7 +56,22 @@ func customSchemeCoversEveryStatusWithFallbacks() {
     #expect(scheme.aggregateIcon(for: [.working]) == scheme.appearance(for: .working).icon)
     #expect(scheme.aggregateIcon(for: [.done]) == scheme.appearance(for: .done).icon)
     #expect(scheme.aggregateIcon(for: [.idle]) == scheme.idleAggregateIcon)
+    #expect(scheme.aggregateIcon(for: [.unknown]) == scheme.appearance(for: .unknown).icon)
+    #expect(scheme.aggregateIcon(for: [.working, .idle]) == scheme.idleAggregateIcon)
     #expect(scheme.emptyStateIcon == scheme.disconnectedIcon)
+}
+
+@Test
+func aggregatePriorityIsBlockedUnknownDoneThenAllWorking() {
+    for scheme in IconSchemeRegistry.all {
+        #expect(scheme.aggregateIcon(for: [.working, .working]) == scheme.aggregateIcon(for: [.working]))
+        #expect(scheme.aggregateIcon(for: [.working, .idle]) == scheme.idleAggregateIcon)
+        #expect(scheme.aggregateIcon(for: [.idle]) == scheme.idleAggregateIcon)
+        #expect(scheme.aggregateIcon(for: [.unknown]) != scheme.idleAggregateIcon)
+        #expect(scheme.aggregateIcon(for: [.done, .unknown]) == scheme.aggregateIcon(for: [.unknown]))
+        #expect(scheme.aggregateIcon(for: [.working, .done]) == scheme.aggregateIcon(for: [.done]))
+        #expect(scheme.aggregateIcon(for: [.blocked, .unknown, .done]) == scheme.aggregateIcon(for: [.blocked]))
+    }
 }
 
 @Test

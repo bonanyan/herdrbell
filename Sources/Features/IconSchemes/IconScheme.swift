@@ -36,7 +36,8 @@ protocol IconScheme: Sendable {
     func appearance(for status: AgentStatus) -> StatusAppearance
 
     /// Menu bar icon summarizing all agents across connected sessions.
-    /// Default priority: blocked > working > done > idle.
+    /// Priority: blocked > unknown > done; working only when every agent is
+    /// working; otherwise the scheme's all-idle aggregate.
     func aggregateIcon(for statuses: some Sequence<AgentStatus>) -> StatusIcon
 
     /// Menu bar icon shown when everything is idle (after the settle debounce).
@@ -50,4 +51,20 @@ protocol IconScheme: Sendable {
 
     /// Icon for the menu's empty/offline state row.
     var emptyStateIcon: StatusIcon { get }
+}
+
+extension IconScheme {
+    /// The single status the menu bar aggregate stands for.
+    ///
+    /// Priority: blocked > unknown > done. `working` only when *every* agent is
+    /// working; anything else — all idle, or working mixed with idle — collapses
+    /// to `.idle`, which schemes render as their all-idle aggregate artwork.
+    func aggregateStatus(for statuses: some Sequence<AgentStatus>) -> AgentStatus {
+        let set = Set(statuses)
+        if set.contains(.blocked) { return .blocked }
+        if set.contains(.unknown) { return .unknown }
+        if set.contains(.done) { return .done }
+        if !set.isEmpty, set.isSubset(of: [.working]) { return .working }
+        return .idle
+    }
 }

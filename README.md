@@ -165,20 +165,22 @@ A small <img src="Sources/Resources/Assets.xcassets/StatusIcons/marker-focused.i
 ### Menu bar aggregate symbol
 
 The single menu bar icon summarizes **all** connected sessions using a
-strict priority: **blocked > working > done > idle**.
+strict priority: **blocked > unknown > done**, then **working only when every
+agent is working**; anything else collapses to the all-idle grid.
 
 | Menu bar icon (Custom, default) | Classic symbol | State |
 |---|---|---|
 | <img src="Sources/Resources/Assets.xcassets/StatusIcons/status-blocked.imageset/status-blocked.svg" height="18" alt="blocked"> | `exclamationmark.octagon.fill` | At least one agent is **blocked** |
-| <img src="Sources/Resources/Assets.xcassets/StatusIcons/status-working.imageset/status-working.svg" height="18" alt="working"> | `arrow.triangle.2.circlepath` | At least one agent is **working** (none blocked) |
-| <img src="Sources/Resources/Assets.xcassets/StatusIcons/status-done.imageset/status-done.svg" height="18" alt="done"> | `checkmark.circle.fill` | At least one agent is **done** (none blocked/working) |
-| <img src="Sources/Resources/Assets.xcassets/StatusIcons/aggregate-idle.imageset/aggregate-idle.svg" height="18" alt="idle"> | `circle.grid.2x2` | Everything is **idle** |
+| <img src="Sources/Resources/Assets.xcassets/StatusIcons/status-unknown.imageset/status-unknown.svg" height="18" alt="unknown"> | `questionmark.circle` | At least one agent is **unknown** (none blocked) |
+| <img src="Sources/Resources/Assets.xcassets/StatusIcons/status-done.imageset/status-done.svg" height="18" alt="done"> | `checkmark.circle.fill` | At least one agent is **done** (none blocked/unknown) |
+| <img src="Sources/Resources/Assets.xcassets/StatusIcons/status-working.imageset/status-working.svg" height="18" alt="working"> | `arrow.triangle.2.circlepath` | **Every** agent is **working** |
+| <img src="Sources/Resources/Assets.xcassets/StatusIcons/aggregate-idle.imageset/aggregate-idle.svg" height="18" alt="idle"> | `circle.grid.2x2` | Everything is **idle** — or working mixed with idle |
 | <img src="Sources/Resources/Assets.xcassets/StatusIcons/aggregate-disconnected.imageset/aggregate-disconnected.svg" height="18" alt="disconnected"> | `circle.slash` | **No herdr session connected** (server down or not found) |
 
 **Idle debounce:** transitions *to* the all-idle grid are delayed by 0.5
 seconds. Agents flicker through `idle` between tool calls; the short debounce
 still swallows those blips while keeping the menu bar near real-time.
-Transitions to blocked/working/done and disconnects are **immediate**.
+Transitions to blocked/unknown/done/working and disconnects are **immediate**.
 
 **Staying in sync:** status changes arrive as live socket events and are applied
 as they happen. As a safety net the app re-reads each session's agent list every
