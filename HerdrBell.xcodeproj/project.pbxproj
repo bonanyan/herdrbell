@@ -24,6 +24,7 @@
 		5FA110BE7AA8108FA3A8FDD5 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = B873994A0A09296B9BF663BD /* Localizable.xcstrings */; };
 		6ED4716D048101F55BD6A14C /* event_pane_agent_status_changed.json in Resources */ = {isa = PBXBuildFile; fileRef = 82BBFC1C4A54DF9BFDFCC7FB /* event_pane_agent_status_changed.json */; };
 		74EF4C4F617EAF8358EC06BA /* JSONValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 202679BC1AEADD9F440D9840 /* JSONValue.swift */; };
+		7686E490603C374E36CAB65C /* SocketConcurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53ED45E60220A5F07B5D3661 /* SocketConcurrencyTests.swift */; };
 		7793B02D2756594605577122 /* IconSchemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F05CD27AF71529BA0369C2B /* IconSchemeTests.swift */; };
 		7B0B95C000C52E8E5A74B45C /* event_pane_created.json in Resources */ = {isa = PBXBuildFile; fileRef = 09CD7F6148C36D11B2941649 /* event_pane_created.json */; };
 		89A7B33DF9E3F46AC4520596 /* MenuBarLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F0781DA8CB0D6375783727 /* MenuBarLabel.swift */; };
@@ -83,6 +84,7 @@
 		4442E866817B24A6B5ACAB36 /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
 		4E1456DF696AE47542E2148E /* app-icon-master.svg */ = {isa = PBXFileReference; path = "app-icon-master.svg"; sourceTree = "<group>"; };
 		52522EC38D8056E6E8C8ED78 /* HerdrSessionClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HerdrSessionClient.swift; sourceTree = "<group>"; };
+		53ED45E60220A5F07B5D3661 /* SocketConcurrencyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketConcurrencyTests.swift; sourceTree = "<group>"; };
 		56F56BB793CCB1C2442326E7 /* ConfigureWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigureWindow.swift; sourceTree = "<group>"; };
 		5928ABEEE40426C57EC37832 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		5D02E52841FF5BE4E275B8DE /* IconSchemeRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconSchemeRegistry.swift; sourceTree = "<group>"; };
@@ -249,6 +251,7 @@
 				682681A35A4220F73D91BB18 /* LivePipelineTests.swift */,
 				F80BDD198F1A6C53766CA32E /* LiveSocketTests.swift */,
 				05347785398682672C007DAD /* ResilienceTests.swift */,
+				53ED45E60220A5F07B5D3661 /* SocketConcurrencyTests.swift */,
 				C9BD8708D76BDD3624C7D5D9 /* WireDecodeTests.swift */,
 				301D1A38261C0099EB488496 /* Fixtures */,
 			);
@@ -420,6 +423,7 @@
 				F9BDD382261A31D60B1B6EEA /* LivePipelineTests.swift in Sources */,
 				A4C9B9949283209AA5149264 /* LiveSocketTests.swift in Sources */,
 				47C64527B819590B3024A152 /* ResilienceTests.swift in Sources */,
+				7686E490603C374E36CAB65C /* SocketConcurrencyTests.swift in Sources */,
 				FF27903D9D09FE1A5554F495 /* WireDecodeTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -465,7 +469,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.0;
+				MARKETING_VERSION = 2.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.herdrbell.HerdrBell;
 				SDKROOT = macosx;
 			};
@@ -622,7 +626,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.0;
+				MARKETING_VERSION = 2.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.herdrbell.HerdrBell;
 				SDKROOT = macosx;
 			};

@@ -17,7 +17,7 @@ targets:
     info:
       path: Sources/Info.plist
       properties:
-        CFBundleShortVersionString: "2.0"
+        CFBundleShortVersionString: "2.0.1"
         CFBundleVersion: "1"
         CFBundleIconName: AppIcon
         LSMinimumSystemVersion: "15.0"
@@ -26,7 +26,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dev.herdrbell.HerdrBell
-        MARKETING_VERSION: "2.0"
+        MARKETING_VERSION: "2.0.1"
         CURRENT_PROJECT_VERSION: "1"
         ENABLE_HARDENED_RUNTIME: YES
         CODE_SIGN_STYLE: Automatic
