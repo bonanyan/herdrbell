@@ -17,6 +17,10 @@ actor HerdrSessionClient {
     private var running = false
     private var runTask: Task<Void, Never>?
 
+    /// Safety net for missed events: the stream is the primary source of truth,
+    /// this only guarantees stale state self-heals within a few seconds.
+    private static let refreshInterval: TimeInterval = 5
+
     private static let lifecycleSubscriptions: [JSONValue] = [
         .object(["type": .string("pane.created")]),
         .object(["type": .string("pane.closed")]),
@@ -48,6 +52,13 @@ actor HerdrSessionClient {
 
     func focus(paneId: String) async throws {
         try await socket.agentFocus(target: paneId)
+    }
+
+    /// Re-reads agent state on demand — called when the menu opens, so rows can
+    /// never be staler than the moment the user looks at them.
+    func refreshNow() async {
+        guard running else { return }
+        try? await refreshAgentList()
     }
 
     private func runLoop() async {
@@ -85,11 +96,12 @@ actor HerdrSessionClient {
     }
 
     private func liveOnce() async throws {
-        let stream = await socket.subscribe(currentSubscriptions())
+        let subscription = await socket.subscribe(currentSubscriptions())
+        defer { subscription.cancel() }
         try await withThrowingTaskGroup(of: Void.self) { group in
             group.addTask { [weak self] in
                 guard let self else { return }
-                try await self.consume(stream)
+                try await self.consume(subscription.events)
             }
             group.addTask { [weak self] in
                 guard let self else { return }
@@ -111,7 +123,7 @@ actor HerdrSessionClient {
 
     private func poll() async throws {
         while running && !Task.isCancelled && !needsResubscribe {
-            try await Task.sleep(for: .seconds(30))
+            try await Task.sleep(for: .seconds(Self.refreshInterval))
             guard running, !needsResubscribe else { return }
             try await refreshAgentList()
         }

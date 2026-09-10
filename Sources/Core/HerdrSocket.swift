@@ -22,10 +22,16 @@ enum HerdrSocketError: Error, Sendable, LocalizedError {
     }
 }
 
-private func posixConnect(path: String) throws -> Int32 {
+private func posixConnect(path: String, ioTimeout: TimeInterval? = nil) throws -> Int32 {
     let fd = socket(AF_UNIX, SOCK_STREAM, 0)
     guard fd >= 0 else {
         throw HerdrSocketError.connectFailed(String(cString: strerror(errno)))
+    }
+    if let ioTimeout {
+        var timeout = timeval(tv_sec: Int(ioTimeout), tv_usec: Int32((ioTimeout.truncatingRemainder(dividingBy: 1)) * 1_000_000))
+        let length = socklen_t(MemoryLayout<timeval>.size)
+        setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, length)
+        setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &timeout, length)
     }
     var addr = sockaddr_un()
     addr.sun_family = sa_family_t(AF_UNIX)
@@ -90,7 +96,7 @@ private func posixReadLine(fd: Int32, buffer: inout Data) throws -> Data? {
     }
 }
 
-private final class SubscriptionState: @unchecked Sendable {
+fileprivate final class SubscriptionState: @unchecked Sendable {
     private let lock = NSLock()
     private var fd: Int32 = -1
     private var isCancelled = false
@@ -132,9 +138,41 @@ private final class SubscriptionState: @unchecked Sendable {
     }
 }
 
+/// A live event stream plus the handle that tears its connection down.
+///
+/// The reader blocks in `read()` for as long as the subscription lives, so the
+/// caller must `cancel()` when it stops consuming — abandoning the stream alone
+/// leaves the reader (and its connection) alive forever.
+struct HerdrSubscription: Sendable {
+    let events: AsyncThrowingStream<HerdrEventEnvelope, Error>
+
+    fileprivate let state: SubscriptionState
+
+    fileprivate init(events: AsyncThrowingStream<HerdrEventEnvelope, Error>, state: SubscriptionState) {
+        self.events = events
+        self.state = state
+    }
+
+    func cancel() {
+        state.cancel()
+    }
+}
+
 actor HerdrSocket {
     let path: String
-    private let ioQueue = DispatchQueue(label: "dev.herdr.bell.socket.io")
+
+    /// Concurrent on purpose: a subscription reader blocks its queue for the
+    /// whole lifetime of the stream, so one-shot requests must never share it.
+    private let requestQueue = DispatchQueue(label: "dev.herdr.bell.socket.io", attributes: .concurrent)
+
+    /// Streams live on their own concurrent queue: each reader blocks a thread
+    /// for the lifetime of the subscription, so they must not be serialised
+    /// against each other or against one-shot requests.
+    private let streamQueue = DispatchQueue(label: "dev.herdr.bell.socket.stream", attributes: .concurrent)
+
+    /// Guards one-shot requests against a wedged server; streams are exempt
+    /// because they are supposed to block until an event arrives.
+    private static let requestTimeout: TimeInterval = 10
 
     init(path: String) {
         self.path = path
@@ -159,8 +197,9 @@ actor HerdrSocket {
     func request(_ method: String, params: JSONValue = .object([:])) async throws -> JSONValue? {
         let id = "req_" + UUID().uuidString
         let requestLine = try Wire.encodeRequest(id: id, method: method, params: params)
+        let timeout = Self.requestTimeout
         let responseLine = try await runBlocking { path in
-            let fd = try posixConnect(path: path)
+            let fd = try posixConnect(path: path, ioTimeout: timeout)
             defer { close(fd) }
             try posixWrite(fd: fd, data: requestLine)
             var buffer = Data()
@@ -178,11 +217,11 @@ actor HerdrSocket {
         return response.result
     }
 
-    func subscribe(_ subscriptions: [JSONValue]) -> AsyncThrowingStream<HerdrEventEnvelope, Error> {
+    func subscribe(_ subscriptions: [JSONValue]) -> HerdrSubscription {
         let path = self.path
-        let queue = self.ioQueue
-        return AsyncThrowingStream { continuation in
-            let state = SubscriptionState()
+        let state = SubscriptionState()
+        let queue = streamQueue
+        let events = AsyncThrowingStream { continuation in
             queue.async {
                 do {
                     let fd = try posixConnect(path: path)
@@ -222,6 +261,7 @@ actor HerdrSocket {
                 state.cancel()
             }
         }
+        return HerdrSubscription(events: events, state: state)
     }
 
     private func requestResult<T: Decodable>(_ method: String, params: JSONValue = .object([:]), as type: T.Type) async throws -> T {
@@ -234,7 +274,7 @@ actor HerdrSocket {
     private func runBlocking<T: Sendable>(_ body: @escaping @Sendable (String) throws -> T) async throws -> T {
         let path = self.path
         return try await withCheckedThrowingContinuation { continuation in
-            ioQueue.async {
+            requestQueue.async {
                 do {
                     continuation.resume(returning: try body(path))
                 } catch {

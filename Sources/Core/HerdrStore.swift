@@ -143,6 +143,16 @@ final class HerdrStore {
         aggregateIcon = rawAggregateIcon
     }
 
+    /// Pulls fresh agent state from every session — invoked when the menu opens
+    /// so the rows always match what herdr reports right now.
+    func refreshNow() async {
+        guard started else { return }
+        let clients = Array(self.clients.values)
+        for client in clients {
+            await client.refreshNow()
+        }
+    }
+
     func focus(_ agent: AgentItem, in sessionName: String) {
         guard let client = clients[sessionName] else { return }
         Task {

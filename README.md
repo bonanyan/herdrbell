@@ -180,6 +180,11 @@ seconds. Agents flicker through `idle` between tool calls; the short debounce
 still swallows those blips while keeping the menu bar near real-time.
 Transitions to blocked/working/done and disconnects are **immediate**.
 
+**Staying in sync:** status changes arrive as live socket events and are applied
+as they happen. As a safety net the app re-reads each session's agent list every
+5 seconds, and pulls a fresh snapshot every time you open the menu, so the rows
+can never drift from what herdr reports.
+
 ## 🎨 Customizing icons
 
 ### Switching bundled schemes

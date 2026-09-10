@@ -48,6 +48,9 @@ struct MenuView: View {
                 .padding(.bottom, 6)
         }
         .frame(width: 280)
+        .task {
+            await store.refreshNow()
+        }
     }
 
     /// Opens the Configure window and reliably grabs focus. This is an
