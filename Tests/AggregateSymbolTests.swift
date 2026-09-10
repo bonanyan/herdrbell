@@ -55,6 +55,23 @@ func aggregateIconSettlesToIdleAfterSustainedIdle() async throws {
 }
 
 @Test @MainActor
+func shippedIdleSettleDelayKeepsIconNearRealTime() async throws {
+    UserDefaults.standard.set(IconSchemeRegistry.default.id, forKey: SettingsKeys.iconSchemeID)
+    let store = HerdrStore()
+    store.enableForTesting()
+    store.addSessionForTesting(name: "default")
+    await store.handle(.connectionChanged(sessionName: "default", connected: true))
+    #expect(store.idleSettleDelay == 0.5)
+
+    await store.handle(.agentsChanged(sessionName: "default", agents: [makeAgent(.working)]))
+    await store.handle(.agentsChanged(sessionName: "default", agents: [makeAgent(.idle)]))
+    #expect(store.aggregateIcon == scheme.aggregateIcon(for: [AgentStatus.working]))
+
+    try await Task.sleep(for: .milliseconds(1_200))
+    #expect(store.aggregateIcon == scheme.idleAggregateIcon)
+}
+
+@Test @MainActor
 func aggregateIconShowsBlockedAndDoneImmediately() async throws {
     let store = await makeConnectedStore(settleDelay: 5)
     await store.handle(.agentsChanged(sessionName: "default", agents: [makeAgent(.working)]))

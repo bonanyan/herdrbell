@@ -175,9 +175,9 @@ strict priority: **blocked > working > done > idle**.
 | <img src="Sources/Resources/Assets.xcassets/StatusIcons/aggregate-idle.imageset/aggregate-idle.svg" height="18" alt="idle"> | `circle.grid.2x2` | Everything is **idle** |
 | <img src="Sources/Resources/Assets.xcassets/StatusIcons/aggregate-disconnected.imageset/aggregate-disconnected.svg" height="18" alt="disconnected"> | `circle.slash` | **No herdr session connected** (server down or not found) |
 
-**Idle debounce:** transitions *to* the all-idle grid are delayed by 5
-seconds. Agents flicker through `idle` between tool calls; the debounce
-keeps the menu bar stable while work is clearly still in progress.
+**Idle debounce:** transitions *to* the all-idle grid are delayed by 0.5
+seconds. Agents flicker through `idle` between tool calls; the short debounce
+still swallows those blips while keeping the menu bar near real-time.
 Transitions to blocked/working/done and disconnects are **immediate**.
 
 ## 🎨 Customizing icons

@@ -24,7 +24,7 @@ final class HerdrStore {
     @ObservationIgnored private var idleSettleTask: Task<Void, Never>?
     @ObservationIgnored private var defaultsObserver: (any NSObjectProtocol)?
 
-    init(idleSettleDelay: TimeInterval = 5) {
+    init(idleSettleDelay: TimeInterval = 0.5) {
         self.idleSettleDelay = idleSettleDelay
         let schemeID = UserDefaults.standard.string(forKey: SettingsKeys.iconSchemeID) ?? IconSchemeRegistry.default.id
         let scheme = IconSchemeRegistry.scheme(id: schemeID)
