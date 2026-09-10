@@ -8,6 +8,7 @@ final class FakeHerdrServer: @unchecked Sendable {
     private let lock = NSLock()
     private var listenerFD: Int32 = -1
     private var clientFDs: [Int32] = []
+    private var subscriberFDs: [Int32] = []
     private var running = false
 
     init(path: String) {
@@ -71,6 +72,17 @@ final class FakeHerdrServer: @unchecked Sendable {
         unlink(path)
     }
 
+    /// Pushes a `pane_agent_status_changed` event to every open subscription.
+    func pushStatusChange(paneId: String, status: String) {
+        let frame = #"{"event":"pane_agent_status_changed","data":{"type":"pane_agent_status_changed","pane_id":"\#(paneId)","workspace_id":"w1","agent_status":"\#(status)","agent":"fake","title":"fake agent title"}}"#
+        lock.lock()
+        let fds = subscriberFDs
+        lock.unlock()
+        for fd in fds {
+            send(fd, frame)
+        }
+    }
+
     private func acceptLoop() {
         while true {
             lock.lock()
@@ -92,7 +104,12 @@ final class FakeHerdrServer: @unchecked Sendable {
     private func serve(_ fd: Int32) {
         var buffer = Data()
         while isRunning() {
-            guard let line = readLine(fd: fd, buffer: &buffer) else { return }
+            guard let line = readLine(fd: fd, buffer: &buffer) else {
+                lock.lock()
+                subscriberFDs.removeAll { $0 == fd }
+                lock.unlock()
+                return
+            }
             guard let text = String(data: line, encoding: .utf8) else { return }
             let id = Self.requestID(text) ?? "req_fake"
             if text.contains("\"ping\"") {
@@ -103,6 +120,9 @@ final class FakeHerdrServer: @unchecked Sendable {
                 send(fd, Self.agentListJSON(id: id))
             } else if text.contains("\"events.subscribe\"") {
                 send(fd, #"{"id":"\#(id)","result":{"type":"subscription_started"}}"#)
+                lock.lock()
+                subscriberFDs.append(fd)
+                lock.unlock()
             } else {
                 send(fd, #"{"id":"\#(id)","result":{}}"#)
             }

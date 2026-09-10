@@ -101,3 +101,33 @@ private func waitUntil(_ seconds: TimeInterval, _ condition: @escaping @Sendable
     }
     return condition()
 }
+
+@Test
+func clientEmitsStatusChangedForPushedEvent() async throws {
+    let path = "/tmp/herdrbell_push_\(ProcessInfo.processInfo.processIdentifier).sock"
+    let server = FakeHerdrServer(path: path)
+    try server.start()
+    defer { server.stop() }
+
+    let collector = EventCollector()
+    let client = HerdrSessionClient(sessionName: "fake", socketPath: path) { event in
+        collector.add(event)
+    }
+    await client.start()
+
+    #expect(await waitUntil(5) { collector.latestAgents.contains { $0.paneId == "w1:p1" } },
+              "client should publish the snapshot agent")
+
+    await server.pushStatusChange(paneId: "w1:p1", status: "blocked")
+
+    #expect(await waitUntil(5) {
+        collector.events.contains { event in
+            if case .statusChanged(_, let paneId, _, let to) = event {
+                return paneId == "w1:p1" && to == .blocked
+            }
+            return false
+        }
+    }, "client should emit statusChanged for a pushed event")
+
+    await client.stop()
+}

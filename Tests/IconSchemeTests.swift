@@ -80,3 +80,12 @@ func everySchemeDisplayNameKeyIsLocalizable() {
         #expect(!scheme.displayNameKey.isEmpty)
     }
 }
+
+@Test
+func statusIconImageRasterizesToPngFile() throws {
+    let url = StatusIconImage.pngFileURL(for: .asset(name: "status-blocked", fallback: "hand.raised.fill"), tint: .red)
+    let unwrapped = try #require(url, "rasterized notification icon should exist")
+    #expect(FileManager.default.fileExists(atPath: unwrapped.path))
+    let data = try Data(contentsOf: unwrapped)
+    #expect(data.count > 100)
+}

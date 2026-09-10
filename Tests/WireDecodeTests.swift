@@ -119,3 +119,17 @@ private func fixtureEvent(_ name: String) throws -> HerdrEventEnvelope {
     let data = try Wire.decoder.decode(AgentStatusChangedEventData.self, from: line)
     #expect(data.agentStatus == .unknown)
 }
+
+@Test
+func decodeLiveShapedAgentStatusChangedEvent() throws {
+    let line = Data(#"{"event":"pane_agent_status_changed","data":{"type":"pane_agent_status_changed","pane_id":"vt:p1","workspace_id":"vt","agent_status":"blocked","agent":"fakeagent","title":"FAKE | verification pane","state_labels":{}}}"#.utf8)
+    guard case .event(let envelope) = try Wire.parseFrame(line) else {
+        Issue.record("expected an event frame")
+        return
+    }
+    #expect(envelope.event == "pane_agent_status_changed")
+    let data = try Wire.decodeResult(envelope.data, as: AgentStatusChangedEventData.self)
+    #expect(data.paneId == "vt:p1")
+    #expect(data.workspaceId == "vt")
+    #expect(data.agentStatus == .blocked)
+}
