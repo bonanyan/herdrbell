@@ -1,0 +1,36 @@
+[package]
+name = "herdrbell"
+version = "2.3.0"
+edition = "2021"
+description = "Menu-bar monitor for herdr coding agents (Linux version)"
+license = "Apache-2.0"
+
+[package.metadata.deb]
+maintainer = "HerdrBell <herdrbell@example.com>"
+copyright = "2024, HerdrBell Contributors"
+license-file = ["../LICENSE", "4"]
+extended-description = """HerdrBell is a system tray application that monitors herdr coding agents.
+It provides real-time status updates, notifications, and quick access to agent sessions."""
+depends = "$auto, libgtk-4-1, libayatana-appindicator3-1"
+section = "utility"
+priority = "optional"
+assets = [
+    ["target/release/herdrbell", "usr/bin/", "755"],
+    ["assets/herdrbell.desktop", "usr/share/applications/", "644"],
+    ["assets/herdrbell.svg", "usr/share/icons/hicolor/scalable/apps/", "644"],
+]
+
+[dependencies]
+gtk4 = "0.9"
+glib = "0.20"
+gio = "0.20"
+ksni = "0.2"
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+notify = "7"
+uuid = { version = "1", features = ["v4"] }
+dirs = "5"
+log = "0.4"
+env_logger = "0.11"
+thiserror = "2"

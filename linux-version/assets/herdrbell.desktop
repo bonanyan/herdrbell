@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=HerdrBell
+Comment=Monitor herdr coding agents
+Exec=herdrbell
+Icon=herdrbell
+Terminal=false
+Categories=Development;Utility;
+Keywords=herdr;agent;monitor;coding;

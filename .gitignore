@@ -1,10 +1,17 @@
-# macOS
+# macOS version
+mac-version/build/
+mac-version/*.xcodeproj/xcuserdata/
+mac-version/*.xcodeproj/project.xcworkspace/xcuserdata/
+mac-version/DerivedData/
+
+# Linux version
+linux-version/target/
+linux-version/Cargo.lock.bak
+
+# General
 .DS_Store
-
-# Build artifacts
-build/
-
-# Xcode
-DerivedData/
-xcuserdata/
-*.xcuserstate
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
