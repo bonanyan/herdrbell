@@ -1,4 +1,5 @@
 import AppKit
+import CoreServices
 
 enum TerminalLauncher: Sendable {
 
@@ -14,6 +15,15 @@ enum TerminalLauncher: Sendable {
     }
 
     private static func findTerminal() -> String? {
+        let contentType = "com.apple.terminal.shell-script" as CFString
+        if let cfURL = LSCopyDefaultApplicationURLForContentType(contentType, .all, nil)?.takeRetainedValue() {
+            let url = cfURL as URL
+            if let bundleID = Bundle(url: url)?.bundleIdentifier {
+                if let name = terminalName(for: bundleID) {
+                    return name
+                }
+            }
+        }
         let candidates = [
             ("com.apple.Terminal", "Terminal"),
             ("com.googlecode.iterm2", "iTerm"),
@@ -28,6 +38,18 @@ enum TerminalLauncher: Sendable {
             }
         }
         return nil
+    }
+
+    private static func terminalName(for bundleID: String) -> String? {
+        switch bundleID {
+        case "com.apple.Terminal": return "Terminal"
+        case "com.googlecode.iterm2": return "iTerm"
+        case "dev.warp.Warp-Stable": return "Warp"
+        case "com.mitchellh.ghostty": return "Ghostty"
+        case "net.kovidgoyal.kitty": return "Kitty"
+        case "org.alacritty": return "Alacritty"
+        default: return nil
+        }
     }
 
     private static func runInTerminal(_ terminal: String, command: String) {
