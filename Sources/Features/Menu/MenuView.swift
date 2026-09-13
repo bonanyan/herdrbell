@@ -91,6 +91,7 @@ struct MenuView: View {
             ForEach(session.agents) { agent in
                 Button {
                     store.focus(agent, in: session.name)
+                    TerminalLauncher.launch(herdrForSession: session.name)
                     dismiss()
                 } label: {
                     HStack(spacing: 8) {

@@ -48,6 +48,7 @@
 		C60C5F3E1E28E728F099F417 /* status-blocked.svg in Resources */ = {isa = PBXBuildFile; fileRef = 7DA7780A80C7EA70F9DF1C6C /* status-blocked.svg */; };
 		C9A70C5921D41B6B42CB06C7 /* IconScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AAA0D3EE81044C9048A6EFA /* IconScheme.swift */; };
 		CE02625228B021521EF59162 /* LoginItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2DE090EC8EC800E15CB759 /* LoginItem.swift */; };
+		CF0F160A6418ADED40A5399F /* TerminalLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03448C0AB3EE20F5251936A5 /* TerminalLauncher.swift */; };
 		D1949E88936187476CA3F448 /* marker-focused.svg in Resources */ = {isa = PBXBuildFile; fileRef = 0F5E282A7DD1678676501E19 /* marker-focused.svg */; };
 		DA8CB01D9FDF2732363D8530 /* HerdrBellApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07DE09A874073489F29929FF /* HerdrBellApp.swift */; };
 		F5AA5753AB19EC4E65234955 /* status-working.svg in Resources */ = {isa = PBXBuildFile; fileRef = CE0BAA514B0B0470B22649E4 /* status-working.svg */; };
@@ -69,6 +70,7 @@
 
 /* Begin PBXFileReference section */
 		0005FE7DE306426D34D998EF /* status-unknown.svg */ = {isa = PBXFileReference; path = "status-unknown.svg"; sourceTree = "<group>"; };
+		03448C0AB3EE20F5251936A5 /* TerminalLauncher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalLauncher.swift; sourceTree = "<group>"; };
 		05347785398682672C007DAD /* ResilienceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResilienceTests.swift; sourceTree = "<group>"; };
 		06D166CC4A51D5B31F5C486A /* FakeHerdrServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeHerdrServer.swift; sourceTree = "<group>"; };
 		07DE09A874073489F29929FF /* HerdrBellApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HerdrBellApp.swift; sourceTree = "<group>"; };
@@ -141,6 +143,7 @@
 				C41B043A17417590343B80CD /* HerdrWire.swift */,
 				202679BC1AEADD9F440D9840 /* JSONValue.swift */,
 				60A6FE0B8120F3CF13A84B9E /* SessionDiscovery.swift */,
+				03448C0AB3EE20F5251936A5 /* TerminalLauncher.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -410,6 +413,7 @@
 				294DFA5773B41A1A70497159 /* SettingsView.swift in Sources */,
 				BE0F3318CA10846BFAD078F8 /* StatusIconImage.swift in Sources */,
 				56CCE855CE767D0FCDD390CF /* StatusIconView.swift in Sources */,
+				CF0F160A6418ADED40A5399F /* TerminalLauncher.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -469,7 +473,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.0.2;
+				MARKETING_VERSION = 2.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.herdrbell.HerdrBell;
 				SDKROOT = macosx;
 			};
@@ -626,7 +630,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.0.2;
+				MARKETING_VERSION = 2.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.herdrbell.HerdrBell;
 				SDKROOT = macosx;
 			};
