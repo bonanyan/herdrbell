@@ -51,6 +51,9 @@ struct MenuView: View {
         .task {
             await store.refreshNow()
         }
+        .onAppear {
+            Task { await store.refreshNow() }
+        }
     }
 
     /// Opens the Configure window and reliably grabs focus. This is an

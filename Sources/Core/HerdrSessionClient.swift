@@ -19,7 +19,7 @@ actor HerdrSessionClient {
 
     /// Safety net for missed events: the stream is the primary source of truth,
     /// this only guarantees stale state self-heals within a few seconds.
-    private static let refreshInterval: TimeInterval = 5
+    private static let refreshInterval: TimeInterval = 1.5
 
     private static let lifecycleSubscriptions: [JSONValue] = [
         .object(["type": .string("pane.created")]),
