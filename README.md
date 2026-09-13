@@ -7,8 +7,8 @@
 **A tiny macOS menu bar bell for your [herdr](https://herdr.dev) coding agents.**
 
 Glance at the menu bar to see which agents are working, which are done,
-and which are blocked waiting for *you* — then jump straight to the pane
-with one click.
+and which are blocked waiting for *you* — then click to jump straight to
+the pane in your terminal. One click, you're there.
 
 ![macOS 15+](https://img.shields.io/badge/macOS-15%2B-blue?logo=apple)
 ![Swift 6](https://img.shields.io/badge/Swift-6.0-orange?logo=swift)
@@ -34,8 +34,8 @@ From that moment on, the menu bar icon *is* your status dashboard:
 - <img src="Sources/Resources/Assets.xcassets/StatusIcons/aggregate-disconnected.imageset/aggregate-disconnected.svg" height="16" alt="disconnected"> **Disconnected** — no herdr running right now
 
 One glance tells you whether it's safe to make coffee. One click opens the
-full per-session agent list; one more click jumps straight to that agent's
-pane. That's the whole product.
+full per-session agent list and launches your terminal with herdr connected
+to that agent's session. That's the whole product.
 
 ## ✨ What it does
 
@@ -43,8 +43,10 @@ pane. That's the whole product.
   grouped by session, with a status icon per agent.
 - **One aggregate icon** — the menu bar symbol reflects the most urgent
   status across all connected sessions, so a single glance is enough.
-- **Click to focus** — selecting an agent tells herdr to focus its pane
-  (`agent.focus`). No window hunting.
+- **Click to focus & open terminal** — selecting an agent tells herdr to
+  focus its pane (`agent.focus`) and opens your default terminal running
+  `herdr` (or `herdr --session <name>`) so you land directly in the right
+  session. Uses the system's preferred terminal app.
 - **Notifications that matter** — a macOS notification fires the moment an
   agent becomes **blocked** (needs your approval/answer) or **done**
   (finished background work).
@@ -177,14 +179,14 @@ agent is working**; anything else collapses to the all-idle grid.
 | <img src="Sources/Resources/Assets.xcassets/StatusIcons/aggregate-idle.imageset/aggregate-idle.svg" height="18" alt="idle"> | `circle.grid.2x2` | Everything is **idle** — or working mixed with idle |
 | <img src="Sources/Resources/Assets.xcassets/StatusIcons/aggregate-disconnected.imageset/aggregate-disconnected.svg" height="18" alt="disconnected"> | `circle.slash` | **No herdr session connected** (server down or not found) |
 
-**Idle debounce:** transitions *to* the all-idle grid are delayed by 0.5
+**Idle debounce:** transitions *to* the all-idle grid are delayed by 0.3
 seconds. Agents flicker through `idle` between tool calls; the short debounce
 still swallows those blips while keeping the menu bar near real-time.
 Transitions to blocked/unknown/done/working and disconnects are **immediate**.
 
 **Staying in sync:** status changes arrive as live socket events and are applied
 as they happen. As a safety net the app re-reads each session's agent list every
-5 seconds, and pulls a fresh snapshot every time you open the menu, so the rows
+1.5 seconds, and pulls a fresh snapshot every time you open the menu, so the rows
 can never drift from what herdr reports.
 
 ## 🎨 Customizing icons
@@ -284,6 +286,10 @@ herdr server ──unix socket──► HerdrSocket (NWConnection actor)
               ▼                    ▼                    ▼
           MenuView             Notifier           SettingsView
      (MenuBarExtra window)  (blocked/done)      (Configure window)
+              │
+              ▼
+       TerminalLauncher
+     (opens default terminal with herdr)
 ```
 
 ```
@@ -295,9 +301,10 @@ Sources/
 │   ├── HerdrSessionClient.swift     per-session state machine, reconnect w/ backoff
 │   ├── SessionDiscovery.swift       finds & watches all herdr sockets
 │   ├── AgentItem.swift              view-model for one agent row
-│   └── HerdrStore.swift             main-actor aggregate store driving the UI
+│   ├── HerdrStore.swift             main-actor aggregate store driving the UI
+│   └── TerminalLauncher.swift       opens default terminal with herdr via AppleScript
 ├── Features/
-│   ├── Menu/MenuView.swift          session groups → agent rows → focus on click
+│   ├── Menu/MenuView.swift          session groups → agent rows → focus + open terminal on click
 │   ├── SettingsView.swift           Configure window (language / icons / login / notify)
 │   ├── Localization.swift           AppLanguage + LocalizationManager (live switching)
 │   ├── IconSchemes/
