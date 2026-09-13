@@ -41,6 +41,17 @@ struct SettingsView: View {
             ))
 
             Toggle(l10n.string("settings.notifications"), isOn: $notificationsEnabled)
+
+            Divider()
+                .padding(.vertical, 4)
+
+            HStack {
+                Spacer()
+                Text(verbatim: "HerdrBell v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?")")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Spacer()
+            }
         }
         .formStyle(.grouped)
         .frame(width: 420)

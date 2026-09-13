@@ -1,4 +1,4 @@
-// HerdrBell v2.2.0
+// HerdrBell v2.3.0
 import SwiftUI
 
 @main

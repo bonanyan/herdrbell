@@ -40,12 +40,6 @@ struct MenuView: View {
                     .padding(.vertical, 4)
             }
             .buttonStyle(.plain)
-
-            Text(verbatim: "HerdrBell v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?")")
-                .font(.caption2)
-                .foregroundStyle(.tertiary)
-                .frame(maxWidth: .infinity)
-                .padding(.bottom, 6)
         }
         .frame(width: 280)
         .task {
