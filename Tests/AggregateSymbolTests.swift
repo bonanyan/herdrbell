@@ -61,7 +61,7 @@ func shippedIdleSettleDelayKeepsIconNearRealTime() async throws {
     store.enableForTesting()
     store.addSessionForTesting(name: "default")
     await store.handle(.connectionChanged(sessionName: "default", connected: true))
-    #expect(store.idleSettleDelay == 0.5)
+    #expect(store.idleSettleDelay == 0.3)
 
     await store.handle(.agentsChanged(sessionName: "default", agents: [makeAgent(.working)]))
     await store.handle(.agentsChanged(sessionName: "default", agents: [makeAgent(.idle)]))
