@@ -80,8 +80,8 @@ actor HerdrSessionClient {
                     } catch {
                         break
                     }
-                    guard needsResubscribe else { break }
                     try await refreshAgentList()
+                    guard needsResubscribe else { break }
                 }
             } catch {
                 // fall through to reconnect
